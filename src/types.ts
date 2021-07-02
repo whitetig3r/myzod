@@ -50,7 +50,7 @@ export abstract class Type<T> {
   try(value: unknown): T | ValidationError {
     try {
       return (this as any).parse.apply(this, arguments);
-    } catch (err) {
+    } catch (err: any) {
       return err;
     }
   }
@@ -235,7 +235,7 @@ const applyPredicates = (predicates: Predicate<any>[], value: any) => {
         );
       }
     }
-  } catch (err) {
+  } catch (err: any) {
     if (err instanceof ValidationError) {
       throw err;
     }
@@ -473,7 +473,7 @@ export class BigIntType extends Type<bigint> implements WithPredicate<bigint>, D
         applyPredicates(this.predicates, int);
       }
       return int;
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof ValidationError) {
         throw err;
       }
@@ -847,7 +847,7 @@ export class ObjectType<T extends ObjectShape>
           throw (schema as any).typeError(`expected key "${key}" of unknown type to be present on object`);
         }
         schema.parse((value as any)[key], { suppressPathErrMsg: true });
-      } catch (err) {
+      } catch (err: any) {
         throw this.buildPathError(err, key, parseOpts);
       }
     }
@@ -895,7 +895,7 @@ export class ObjectType<T extends ObjectShape>
           throw (schema as any).typeError(`expected key "${key}" of unknown type to be present on object`);
         }
         convVal[key] = (schema as any).parse((value as any)[key], { suppressPathErrMsg: true });
-      } catch (err) {
+      } catch (err: any) {
         throw this.buildPathError(err, key, parseOpts);
       }
     }
@@ -941,7 +941,7 @@ export class ObjectType<T extends ObjectShape>
     for (const key in value) {
       try {
         (this[keySignature] as any).parse((value as any)[key], { suppressPathErrMsg: true });
-      } catch (err) {
+      } catch (err: any) {
         throw this.buildPathError(err, key, parseOpts);
       }
     }
@@ -975,7 +975,7 @@ export class ObjectType<T extends ObjectShape>
     for (const key in value) {
       try {
         convVal[key] = (this[keySignature] as any).parse((value as any)[key], { suppressPathErrMsg: true });
-      } catch (err) {
+      } catch (err: any) {
         throw this.buildPathError(err, key, parseOpts);
       }
     }
@@ -1011,7 +1011,7 @@ export class ObjectType<T extends ObjectShape>
     for (const key of new Set(Object.keys(value).concat(this[shapekeysSymbol]))) {
       try {
         ((this.objectShape[key] || this[keySignature]) as any).parse((value as any)[key], { suppressPathErrMsg: true });
-      } catch (err) {
+      } catch (err: any) {
         throw this.buildPathError(err, key, parseOpts);
       }
     }
@@ -1053,7 +1053,7 @@ export class ObjectType<T extends ObjectShape>
         convVal[key] = ((this.objectShape[key] || this[keySignature]) as any as any).parse((value as any)[key], {
           suppressPathErrMsg: true,
         });
-      } catch (err) {
+      } catch (err: any) {
         throw this.buildPathError(err, key, parseOpts);
       }
     }
@@ -1276,7 +1276,7 @@ export class ArrayType<T extends AnyType>
     if (typeof value === 'string' && typeof this.coerceFn === 'function' && !parseOptions?.coerced) {
       try {
         return this.parse(this.coerceFn(value), { ...parseOptions, coerced: true });
-      } catch (e) {
+      } catch (e: any) {
         if (e instanceof ValidationError) {
           throw e;
         }
@@ -1294,7 +1294,7 @@ export class ArrayType<T extends AnyType>
         } else {
           this._parse(value[i], parseOptions);
         }
-      } catch (err) {
+      } catch (err: any) {
         const path = err.path ? [i, ...err.path] : [i];
         const msg = parseOptions?.suppressPathErrMsg
           ? err.message
@@ -1414,7 +1414,7 @@ export class TupleType<T extends AnyType[]>
         } else {
           this.schemas[i].parse(value[i]);
         }
-      } catch (err) {
+      } catch (err: any) {
         throw new ValidationError(`error parsing tuple at index ${i}: ${err.message}`);
       }
     }
@@ -1492,7 +1492,7 @@ export class UnionType<T extends AnyType[]>
           return schema.parse(value, { allowUnknown: true }) as any;
         }
         return schema.parse(value);
-      } catch (err) {
+      } catch (err: any) {
         errors.add(err.message);
       }
     }
